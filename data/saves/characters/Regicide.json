@@ -1,10 +1,10 @@
 {
-  "username": "Adam",
+  "username": "Regicide",
   "password": "lrafam19",
   "staff-rights": "DEVELOPER",
   "position": {
-    "x": 3156,
-    "y": 3500,
+    "x": 3093,
+    "y": 3509,
     "z": 0
   },
   "spell-book": "NORMAL",
@@ -29,7 +29,7 @@
   "prayerblock-timer": 0,
   "target-search-timer": 0,
   "special-attack-restore-timer": 0,
-  "skull-timer": -4233,
+  "skull-timer": -32,
   "skull-type": "WHITE_SKULL",
   "total-kills": 0,
   "target-kills": 0,
@@ -65,8 +65,8 @@
   ],
   "inventory": [
     {
-      "id": 995,
-      "amount": 18
+      "id": -1,
+      "amount": 0
     },
     {
       "id": -1,
@@ -319,7 +319,7 @@
       0,
       0,
       0,
-      48,
+      0,
       0,
       0,
       0,
