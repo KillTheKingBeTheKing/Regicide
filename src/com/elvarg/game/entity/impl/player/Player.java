@@ -398,11 +398,7 @@ public class Player extends Character {
 		// Packets
 		getPacketSender().sendMapRegion().sendDetails(); // Map region, player index and player rights
 		getPacketSender().sendTabs(); // Client sideicons
-		getPacketSender().sendMessage("<img=772>@or2@Welcome to Regicide @red@Beta");
-		getPacketSender()
-				.sendMessage("@red@After beta the economy will be reset, @gre@anything donated for will be kept.");
-		getPacketSender().sendMessage("@blu@All donations go towards improving your gameplay on the server");
-		getPacketSender().sendMessage("@blu@Help raise our playerbase by voting @ ::vote.");
+		getPacketSender().sendMessage("Welcome to Regicide.");
 
 		// Send levels and total exp
 		long totalExp = 0;
