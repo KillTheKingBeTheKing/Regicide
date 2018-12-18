@@ -16,8 +16,8 @@ import com.elvarg.net.packet.PacketBuilder.AccessType;
 import com.elvarg.net.packet.ValueType;
 
 /**
- * Represents a player's npc updating task, which loops through all local
- * npcs and updates their masks according to their current attributes.
+ * Represents a player's npc updating task, which loops through all local npcs
+ * and updates their masks according to their current attributes.
  * 
  * @author Relex lawl
  */
@@ -26,7 +26,8 @@ public class NPCUpdating {
 
 	/**
 	 * Handles the actual npc updating for the associated player.
-	 * @return	The NPCUpdating instance.
+	 * 
+	 * @return The NPCUpdating instance.
 	 */
 	public static void update(Player player) {
 		PacketBuilder update = new PacketBuilder();
@@ -35,7 +36,8 @@ public class NPCUpdating {
 		packet.putBits(8, player.getLocalNpcs().size());
 		for (Iterator<NPC> npcIterator = player.getLocalNpcs().iterator(); npcIterator.hasNext();) {
 			NPC npc = npcIterator.next();
-			if (World.getNpcs().get(npc.getIndex()) != null && npc.isVisible() && player.getPosition().isWithinDistance(npc.getPosition()) && !npc.isNeedsPlacement()) {
+			if (World.getNpcs().get(npc.getIndex()) != null && npc.isVisible()
+					&& player.getPosition().isWithinDistance(npc.getPosition()) && !npc.isNeedsPlacement()) {
 				updateMovement(npc, packet);
 				if (npc.getUpdateFlag().isUpdateRequired()) {
 					appendUpdates(npc, update);
@@ -46,8 +48,8 @@ public class NPCUpdating {
 				packet.putBits(2, 3);
 			}
 		}
-		for(NPC npc : World.getNpcs()) {
-			if (player.getLocalNpcs().size() >= 79) //Originally 255
+		for (NPC npc : World.getNpcs()) {
+			if (player.getLocalNpcs().size() >= 79) // Originally 255
 				break;
 			if (npc == null || player.getLocalNpcs().contains(npc) || !npc.isVisible() || npc.isNeedsPlacement())
 				continue;
@@ -71,24 +73,40 @@ public class NPCUpdating {
 
 	/**
 	 * Adds an npc to the associated player's client.
-	 * @param npc		The npc to add.
-	 * @param builder	The packet builder to write information on.
-	 * @return			The NPCUpdating instance.
+	 * 
+	 * @param npc
+	 *            The npc to add.
+	 * @param builder
+	 *            The packet builder to write information on.
+	 * @return The NPCUpdating instance.
 	 */
 	private static void addNPC(Player player, NPC npc, PacketBuilder builder) {
 		builder.putBits(14, npc.getIndex());
-		builder.putBits(5, npc.getPosition().getY()-player.getPosition().getY());
-		builder.putBits(5, npc.getPosition().getX()-player.getPosition().getX());
+		builder.putBits(5, npc.getPosition().getY() - player.getPosition().getY());
+		builder.putBits(5, npc.getPosition().getX() - player.getPosition().getX());
 		builder.putBits(1, 0);
 		builder.putBits(14, npc.getId());
 		builder.putBits(1, npc.getUpdateFlag().isUpdateRequired() ? 1 : 0);
+
+		// Facing update. We don't want to update facing for npcs that walk.
+		boolean updateFacing = npc.getMovementCoordinator().getRadius() == 0;
+		builder.putBits(1, updateFacing ? 1 : 0);
+		if (updateFacing) {
+			int[] faceDeltas = npc.getFace().getDirection().getDirectionDelta();
+			Position position = npc.getPosition().copy().add(faceDeltas[0], faceDeltas[1]);
+			builder.putBits(14, position.getX() * 2 + 1); // face x
+			builder.putBits(14, position.getY() * 2 + 1); // face y
+		}
 	}
 
 	/**
 	 * Updates the npc's movement queue.
-	 * @param npc		The npc who's movement is updated.
-	 * @param builder	The packet builder to write information on.
-	 * @return			The NPCUpdating instance.
+	 * 
+	 * @param npc
+	 *            The npc who's movement is updated.
+	 * @param builder
+	 *            The packet builder to write information on.
+	 * @return The NPCUpdating instance.
 	 */
 	private static void updateMovement(NPC npc, PacketBuilder out) {
 		if (npc.getRunningDirection().toInteger() == -1) {
@@ -116,9 +134,12 @@ public class NPCUpdating {
 
 	/**
 	 * Appends a mask update for {@code npc}.
-	 * @param npc		The npc to update masks for.
-	 * @param builder	The packet builder to write information on.
-	 * @return			The NPCUpdating instance.
+	 * 
+	 * @param npc
+	 *            The npc to update masks for.
+	 * @param builder
+	 *            The packet builder to write information on.
+	 * @return The NPCUpdating instance.
 	 */
 	private static void appendUpdates(NPC npc, PacketBuilder block) {
 		int mask = 0;
@@ -170,14 +191,14 @@ public class NPCUpdating {
 		if (flag.flagged(Flag.NPC_APPEARANCE)) {
 			boolean transform = npc.getNpcTransformationId() != -1;
 
-			//Changes the npc's headicon.
+			// Changes the npc's headicon.
 			block.put(npc.getHeadIcon());
 
-			//Should we transform the npc into anotehr npc?
+			// Should we transform the npc into anotehr npc?
 			block.put(transform ? 1 : 0);
 
-			//Transforms the npc into another npc.
-			if(transform) {
+			// Transforms the npc into another npc.
+			if (transform) {
 				block.putShort(npc.getNpcTransformationId(), ValueType.A, ByteOrder.LITTLE);
 			}
 		}
@@ -189,10 +210,14 @@ public class NPCUpdating {
 	}
 
 	/**
-	 * Updates {@code npc}'s current animation and displays it for all local players.
-	 * @param builder	The packet builder to write information on.
-	 * @param npc		The npc to update animation for.
-	 * @return			The NPCUpdating instance.
+	 * Updates {@code npc}'s current animation and displays it for all local
+	 * players.
+	 * 
+	 * @param builder
+	 *            The packet builder to write information on.
+	 * @param npc
+	 *            The npc to update animation for.
+	 * @return The NPCUpdating instance.
 	 */
 	private static void updateAnimation(PacketBuilder builder, NPC npc) {
 		builder.putShort(npc.getAnimation().getId(), ByteOrder.LITTLE);
@@ -201,9 +226,12 @@ public class NPCUpdating {
 
 	/**
 	 * Updates {@code npc}'s current graphics and displays it for all local players.
-	 * @param builder	The packet builder to write information on.
-	 * @param npc		The npc to update graphics for.
-	 * @return			The NPCUpdating instance.
+	 * 
+	 * @param builder
+	 *            The packet builder to write information on.
+	 * @param npc
+	 *            The npc to update graphics for.
+	 * @return The NPCUpdating instance.
 	 */
 	private static void updateGraphics(PacketBuilder builder, NPC npc) {
 		builder.putShort(npc.getGraphic().getId());
@@ -212,9 +240,12 @@ public class NPCUpdating {
 
 	/**
 	 * Updates the npc's single hit.
-	 * @param builder	The packet builder to write information on.
-	 * @param npc		The npc to update the single hit for.
-	 * @return			The NPCUpdating instance.
+	 * 
+	 * @param builder
+	 *            The packet builder to write information on.
+	 * @param npc
+	 *            The npc to update the single hit for.
+	 * @return The NPCUpdating instance.
 	 */
 	private static void updateSingleHit(PacketBuilder builder, NPC npc) {
 		builder.putShort(npc.getPrimaryHit().getDamage());
@@ -226,9 +257,12 @@ public class NPCUpdating {
 
 	/**
 	 * Updates the npc's double hit.
-	 * @param builder	The packet builder to write information on.
-	 * @param npc		The npc to update the double hit for.
-	 * @return			The NPCUpdating instance.
+	 * 
+	 * @param builder
+	 *            The packet builder to write information on.
+	 * @param npc
+	 *            The npc to update the double hit for.
+	 * @return The NPCUpdating instance.
 	 */
 	private static void updateDoubleHit(PacketBuilder builder, NPC npc) {
 		builder.putShort(npc.getSecondaryHit().getDamage());

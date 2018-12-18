@@ -29,8 +29,7 @@ import com.elvarg.net.packet.PacketListener;
 import com.elvarg.util.ObjectIdentifiers;
 
 /**
- * This packet listener is called when a player clicked
- * on a game object.
+ * This packet listener is called when a player clicked on a game object.
  * 
  * @author relex lawl
  */
@@ -39,8 +38,11 @@ public class ObjectActionPacketListener extends ObjectIdentifiers implements Pac
 
 	/**
 	 * Handles the first click option on an object.
-	 * @param player		The player that clicked on the object.
-	 * @param packet		The packet containing the object's information.
+	 * 
+	 * @param player
+	 *            The player that clicked on the object.
+	 * @param packet
+	 *            The packet containing the object's information.
 	 */
 	private static void firstClick(final Player player, Packet packet) {
 		final int x = packet.readLEShortA();
@@ -48,46 +50,50 @@ public class ObjectActionPacketListener extends ObjectIdentifiers implements Pac
 		final int y = packet.readUnsignedShortA();
 		final Position position = new Position(x, y, player.getPosition().getZ());
 		final Optional<GameObject> object = MapObjects.get(id, position);
-		//Make sure the object actually exists in the region...
-		if(!object.isPresent()) {
-			Server.getLogger().info("Object with id "+id+" does not exist!");
+		// Make sure the object actually exists in the region...
+		if (!object.isPresent()) {
+			Server.getLogger().info("Object with id " + id + " does not exist!");
 			return;
 		}
 
-		//Get object definition
+		// Get object definition
 		final ObjectDefinition def = ObjectDefinition.forId(id);
-		if(def == null) {
-			Server.getLogger().info("ObjectDefinition for object "+id+" is null.");
+		if (def == null) {
+			Server.getLogger().info("ObjectDefinition for object " + id + " is null.");
 			return;
 		}
 
-		//Calculate object size...
+		// Calculate object size...
 		final int size = (def.getSizeX() + def.getSizeY()) - 1;
 
-		//Face object..
+		// Face object..
 		player.setPositionToFace(position);
 
 		player.setWalkToTask(new WalkToAction(player, position, size, new Action() {
 			@Override
 			public void execute() {
-				//Skills..
-				if(player.getSkillManager().startSkillable(object.get())) {
+				// Skills..
+				if (player.getSkillManager().startSkillable(object.get())) {
 					return;
 				}
 
-				//Wilderness obelisks
-				if(player.getLocation() == Location.WILDERNESS) {
-					if(Obelisks.activate(id)) {
+				// Wilderness obelisks
+				if (player.getLocation() == Location.WILDERNESS) {
+					if (Obelisks.activate(id)) {
 						return;
 					}
 				}
 
-				switch(id) {
+				switch (id) {
 				case ANVIL:
 					EquipmentMaking.openInterface(player);
 					break;
-					
+
 				case BANK_CHEST:
+					player.getBank(player.getCurrentBankTab()).open();
+					break;
+
+				case BANK_BOOTH_2:
 					player.getBank(player.getCurrentBankTab()).open();
 					break;
 
@@ -98,9 +104,11 @@ public class ObjectActionPacketListener extends ObjectIdentifiers implements Pac
 
 				case WILDERNESS_DITCH:
 					player.getMovementQueue().reset();
-					if(player.getForceMovement() == null && player.getClickDelay().elapsed(2000)) {
+					if (player.getForceMovement() == null && player.getClickDelay().elapsed(2000)) {
 						final Position crossDitch = new Position(0, player.getPosition().getY() < 3522 ? 3 : -3);
-						TaskManager.submit(new ForceMovementTask(player, 3, new ForceMovement(player.getPosition().copy(), crossDitch, 0, 70, crossDitch.getY() == 3 ? 0 : 2, 6132)));
+						TaskManager
+								.submit(new ForceMovementTask(player, 3, new ForceMovement(player.getPosition().copy(),
+										crossDitch, 0, 70, crossDitch.getY() == 3 ? 0 : 2, 6132)));
 						player.getClickDelay().reset();
 					}
 					break;
@@ -110,25 +118,25 @@ public class ObjectActionPacketListener extends ObjectIdentifiers implements Pac
 					player.setDialogueOptions(new DialogueOptions() {
 						@Override
 						public void handleOption(Player player, int option) {
-							switch(option) {
-							case 1: //Normal spellbook option
+							switch (option) {
+							case 1: // Normal spellbook option
 								player.getPacketSender().sendInterfaceRemoval();
 								MagicSpellbook.changeSpellbook(player, MagicSpellbook.NORMAL);
 								break;
-							case 2: //Ancient spellbook option
+							case 2: // Ancient spellbook option
 								player.getPacketSender().sendInterfaceRemoval();
 								MagicSpellbook.changeSpellbook(player, MagicSpellbook.ANCIENT);
 								break;
-							case 3: //Lunar spellbook option
+							case 3: // Lunar spellbook option
 								player.getPacketSender().sendInterfaceRemoval();
 								MagicSpellbook.changeSpellbook(player, MagicSpellbook.LUNAR);
 								break;
-							case 4: //Cancel option
+							case 4: // Cancel option
 								player.getPacketSender().sendInterfaceRemoval();
 								break;
 							}
 						}
-					});				
+					});
 					break;
 
 				case ORNATE_REJUVENATION_POOL:
@@ -144,8 +152,11 @@ public class ObjectActionPacketListener extends ObjectIdentifiers implements Pac
 
 	/**
 	 * Handles the second click option on an object.
-	 * @param player		The player that clicked on the object.
-	 * @param packet		The packet containing the object's information.
+	 * 
+	 * @param player
+	 *            The player that clicked on the object.
+	 * @param packet
+	 *            The packet containing the object's information.
 	 */
 	private static void secondClick(final Player player, Packet packet) {
 		final int id = packet.readLEShortA();
@@ -154,35 +165,35 @@ public class ObjectActionPacketListener extends ObjectIdentifiers implements Pac
 		final Position position = new Position(x, y, player.getPosition().getZ());
 		final Optional<GameObject> object = MapObjects.get(id, position);
 
-		//Make sure the object actually exists in the region...
-		if(!object.isPresent()) {
-			Server.getLogger().info("Object with id "+id+" does not exist!");
+		// Make sure the object actually exists in the region...
+		if (!object.isPresent()) {
+			Server.getLogger().info("Object with id " + id + " does not exist!");
 			return;
 		}
 
-		//Get object definition
+		// Get object definition
 		final ObjectDefinition def = ObjectDefinition.forId(id);
-		if(def == null) {
-			Server.getLogger().info("ObjectDefinition for object "+id+" is null.");
+		if (def == null) {
+			Server.getLogger().info("ObjectDefinition for object " + id + " is null.");
 			return;
 		}
 
-		//Calculate object size...
+		// Calculate object size...
 		final int size = (def.getSizeX() + def.getSizeY()) - 1;
 
-		//Face object..
+		// Face object..
 		player.setPositionToFace(position);
 
 		player.setWalkToTask(new WalkToAction(player, position, size, new Action() {
 			public void execute() {
-				//Check thieving..
-				if(StallThieving.init(player, object.get())) {
+				// Check thieving..
+				if (StallThieving.init(player, object.get())) {
 					return;
 				}
-				
-				switch(id) {
+
+				switch (id) {
 				case FURNACE_18:
-					for(Bar bar : Smithing.Bar.values()) {
+					for (Bar bar : Smithing.Bar.values()) {
 						player.getPacketSender().sendInterfaceModel(bar.getFrame(), bar.getBar(), 150);
 					}
 					player.getPacketSender().sendChatboxInterface(2400);
@@ -203,8 +214,11 @@ public class ObjectActionPacketListener extends ObjectIdentifiers implements Pac
 
 	/**
 	 * Handles the third click option on an object.
-	 * @param player		The player that clicked on the object.
-	 * @param packet		The packet containing the object's information.
+	 * 
+	 * @param player
+	 *            The player that clicked on the object.
+	 * @param packet
+	 *            The packet containing the object's information.
 	 */
 	private static void thirdClick(Player player, Packet packet) {
 		final int x = packet.readLEShort();
@@ -213,28 +227,28 @@ public class ObjectActionPacketListener extends ObjectIdentifiers implements Pac
 		final Position position = new Position(x, y, player.getPosition().getZ());
 		final Optional<GameObject> object = MapObjects.get(id, position);
 
-		//Make sure the object actually exists in the region...
-		if(!object.isPresent()) {
-			Server.getLogger().info("Object with id "+id+" does not exist!");
+		// Make sure the object actually exists in the region...
+		if (!object.isPresent()) {
+			Server.getLogger().info("Object with id " + id + " does not exist!");
 			return;
 		}
 
-		//Get object definition
+		// Get object definition
 		final ObjectDefinition def = ObjectDefinition.forId(id);
-		if(def == null) {
-			Server.getLogger().info("ObjectDefinition for object "+id+" is null.");
+		if (def == null) {
+			Server.getLogger().info("ObjectDefinition for object " + id + " is null.");
 			return;
 		}
 
-		//Calculate object size...
+		// Calculate object size...
 		final int size = (def.getSizeX() + def.getSizeY()) - 1;
 
-		//Face object..
+		// Face object..
 		player.setPositionToFace(position);
 
 		player.setWalkToTask(new WalkToAction(player, position, size, new Action() {
 			public void execute() {
-				switch(id) {
+				switch (id) {
 				case MAGICAL_ALTAR:
 					player.getPacketSender().sendInterfaceRemoval();
 					MagicSpellbook.changeSpellbook(player, MagicSpellbook.ANCIENT);
@@ -246,8 +260,11 @@ public class ObjectActionPacketListener extends ObjectIdentifiers implements Pac
 
 	/**
 	 * Handles the fourth click option on an object.
-	 * @param player		The player that clicked on the object.
-	 * @param packet		The packet containing the object's information.
+	 * 
+	 * @param player
+	 *            The player that clicked on the object.
+	 * @param packet
+	 *            The packet containing the object's information.
 	 */
 	private static void fourthClick(Player player, Packet packet) {
 		final int x = packet.readLEShortA();
@@ -256,28 +273,28 @@ public class ObjectActionPacketListener extends ObjectIdentifiers implements Pac
 		final Position position = new Position(x, y, player.getPosition().getZ());
 		final Optional<GameObject> object = MapObjects.get(id, position);
 
-		//Make sure the object actually exists in the region...
-		if(!object.isPresent()) {
-			Server.getLogger().info("Object with id "+id+" does not exist!");
+		// Make sure the object actually exists in the region...
+		if (!object.isPresent()) {
+			Server.getLogger().info("Object with id " + id + " does not exist!");
 			return;
 		}
 
-		//Get object definition
+		// Get object definition
 		final ObjectDefinition def = ObjectDefinition.forId(id);
-		if(def == null) {
-			Server.getLogger().info("ObjectDefinition for object "+id+" is null.");
+		if (def == null) {
+			Server.getLogger().info("ObjectDefinition for object " + id + " is null.");
 			return;
 		}
 
-		//Calculate object size...
+		// Calculate object size...
 		final int size = (def.getSizeX() + def.getSizeY()) - 1;
 
-		//Face object..
+		// Face object..
 		player.setPositionToFace(position);
 
 		player.setWalkToTask(new WalkToAction(player, position, size, new Action() {
 			public void execute() {
-				switch(id) {
+				switch (id) {
 				case MAGICAL_ALTAR:
 					player.getPacketSender().sendInterfaceRemoval();
 					MagicSpellbook.changeSpellbook(player, MagicSpellbook.LUNAR);
@@ -289,8 +306,11 @@ public class ObjectActionPacketListener extends ObjectIdentifiers implements Pac
 
 	/**
 	 * Handles the fifth click option on an object.
-	 * @param player		The player that clicked on the object.
-	 * @param packet		The packet containing the object's information.
+	 * 
+	 * @param player
+	 *            The player that clicked on the object.
+	 * @param packet
+	 *            The packet containing the object's information.
 	 */
 	private static void fifthClick(final Player player, Packet packet) {
 
@@ -299,12 +319,12 @@ public class ObjectActionPacketListener extends ObjectIdentifiers implements Pac
 	@Override
 	public void handleMessage(Player player, Packet packet) {
 
-		if(player == null || player.getHitpoints() <= 0) {
+		if (player == null || player.getHitpoints() <= 0) {
 			return;
 		}
 
-		//Make sure we aren't doing something else..
-		if(player.busy()) {
+		// Make sure we aren't doing something else..
+		if (player.busy()) {
 			return;
 		}
 
