@@ -17,7 +17,7 @@ public class NetworkConstants {
 	/**
 	 * The game port
 	 */
-	public static final int GAME_PORT = 43595;
+	public static final int GAME_PORT = 43594;
 
 	/**
 	 * The opcode for requesting a login.

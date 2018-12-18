@@ -3,12 +3,12 @@
   "password": "lrafam19",
   "staff-rights": "DEVELOPER",
   "position": {
-    "x": 3096,
-    "y": 3491,
+    "x": 3251,
+    "y": 3394,
     "z": 0
   },
   "spell-book": "NORMAL",
-  "fight-type": "UNARMED_KICK",
+  "fight-type": "SWORD_LUNGE",
   "auto-retaliate": false,
   "xp-locked": false,
   "clanchat": "",
@@ -29,7 +29,7 @@
   "prayerblock-timer": 0,
   "target-search-timer": 0,
   "special-attack-restore-timer": 0,
-  "skull-timer": -102951,
+  "skull-timer": -125002,
   "skull-type": "WHITE_SKULL",
   "total-kills": 0,
   "target-kills": 0,
@@ -65,12 +65,12 @@
   ],
   "inventory": [
     {
-      "id": 6570,
+      "id": 13190,
       "amount": 1
     },
     {
-      "id": 21295,
-      "amount": 1
+      "id": 13204,
+      "amount": 10000000
     },
     {
       "id": -1,
@@ -179,48 +179,48 @@
   ],
   "equipment": [
     {
-      "id": -1,
-      "amount": 0
+      "id": 21888,
+      "amount": 1
+    },
+    {
+      "id": 21295,
+      "amount": 1
+    },
+    {
+      "id": 20366,
+      "amount": 1
+    },
+    {
+      "id": 22324,
+      "amount": 1
+    },
+    {
+      "id": 22327,
+      "amount": 1
+    },
+    {
+      "id": 22322,
+      "amount": 1
     },
     {
       "id": -1,
       "amount": 0
     },
     {
-      "id": -1,
-      "amount": 0
+      "id": 22328,
+      "amount": 1
     },
     {
       "id": -1,
       "amount": 0
     },
     {
-      "id": -1,
-      "amount": 0
+      "id": 7462,
+      "amount": 1
     },
     {
-      "id": -1,
-      "amount": 0
-    },
-    {
-      "id": -1,
-      "amount": 0
-    },
-    {
-      "id": -1,
-      "amount": 0
-    },
-    {
-      "id": -1,
-      "amount": 0
-    },
-    {
-      "id": -1,
-      "amount": 0
-    },
-    {
-      "id": -1,
-      "amount": 0
+      "id": 13239,
+      "amount": 1
     },
     {
       "id": -1,
@@ -237,24 +237,24 @@
   ],
   "appearance": [
     0,
-    3,
-    18,
-    26,
+    4,
+    19,
+    30,
     34,
     38,
     42,
-    14,
-    2,
-    14,
-    5,
-    4,
-    0
+    12,
+    3,
+    0,
+    1,
+    1,
+    1
   ],
   "skills": {
     "level": [
       99,
-      99,
       1000,
+      99,
       99,
       99,
       99,
@@ -278,8 +278,8 @@
     ],
     "maxLevel": [
       99,
-      99,
       1000,
+      99,
       99,
       99,
       99,
@@ -302,10 +302,10 @@
       99
     ],
     "experience": [
-      13034431,
-      13034431,
-      536874229,
-      13036810,
+      13034767,
+      536870911,
+      13041751,
+      13039760,
       13034431,
       13034431,
       13034431,
@@ -360,7 +360,56 @@
   ],
   "friends": [],
   "ignores": [],
-  "bank-0": [],
+  "bank-0": [
+    {
+      "id": 6570,
+      "amount": 1
+    },
+    {
+      "id": 21264,
+      "amount": 1
+    },
+    {
+      "id": 21791,
+      "amount": 1
+    },
+    {
+      "id": 22653,
+      "amount": 1
+    },
+    {
+      "id": 7762,
+      "amount": 1
+    },
+    {
+      "id": 12290,
+      "amount": 1
+    },
+    {
+      "id": 1772,
+      "amount": 1
+    },
+    {
+      "id": 11941,
+      "amount": 1
+    },
+    {
+      "id": 1109,
+      "amount": 1
+    },
+    {
+      "id": 7158,
+      "amount": 1
+    },
+    {
+      "id": 532,
+      "amount": 1
+    },
+    {
+      "id": 22547,
+      "amount": 1
+    }
+  ],
   "bank-1": [],
   "bank-2": [],
   "bank-3": [],

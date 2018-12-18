@@ -29,27 +29,30 @@ public class NPCOptionPacketListener extends NpcIdentifiers implements PacketLis
 
 	private static void firstClick(Player player, Packet packet) {
 		int index = packet.readLEShort();
-		if(index < 0 || index > World.getNpcs().capacity())
+		if (index < 0 || index > World.getNpcs().capacity())
 			return;
 		final NPC npc = World.getNpcs().get(index);
 		if (npc == null)
 			return;
 		player.setEntityInteraction(npc);
-		if(player.getRights() == PlayerRights.ADMINISTRATOR)
-			player.getPacketSender().sendMessage("First click npc id: "+npc.getId());
+		if (player.getRights() == PlayerRights.ADMINISTRATOR)
+			player.getPacketSender().sendMessage("First click npc id: " + npc.getId());
 		player.setWalkToTask(new WalkToAction(player, npc.getPosition(), npc.getSize(), new Action() {
 			@Override
 			public void execute() {
-				//Check if we're interacting with our pet..
-				if(PetHandler.interact(player, npc)) {
+				// Check if we're interacting with our pet..
+				if (PetHandler.interact(player, npc)) {
 					return;
 				}
-				
-				switch(npc.getId()) {
-			/*	case 1497: //Net and bait
-				case 1498: // Net and bait
-					player.getSkillManager().startSkillable(new Fishing(npc, FishingTool.NET));
-					break;*/
+
+				switch (npc.getId()) {
+				/*
+				 * case 1497: //Net and bait case 1498: // Net and bait
+				 * player.getSkillManager().startSkillable(new Fishing(npc, FishingTool.NET));
+				 * break;
+				 */
+				case AUBURY:
+					ShopManager.open(player, ShopIdentifiers.RUNES_STORE);
 				case SHOP_KEEPER_5:
 				case SHOP_KEEPER_4:
 				case SHOP_ASSISTANT_4:
@@ -63,25 +66,26 @@ public class NPCOptionPacketListener extends NpcIdentifiers implements PacketLis
 					break;
 
 				case EMBLEM_TRADER:
-					//And then start dialogue
+					// And then start dialogue
 					DialogueManager.start(player, 0);
-					//Set dialogue options
+					// Set dialogue options
 					player.setDialogueOptions(new DialogueOptions() {
 						@Override
 						public void handleOption(Player player, int option) {
-							switch(option) {
+							switch (option) {
 							case 1:
-								//Open pvp shop
+								// Open pvp shop
 								ShopManager.open(player, ShopIdentifiers.BOUNTY_HUNTER_STORE);
 								break;
 							case 2:
-								//Sell emblems option
+								// Sell emblems option
 								player.setDialogueOptions(new DialogueOptions() {
 									@Override
 									public void handleOption(Player player, int option) {
-										if(option == 1) {
+										if (option == 1) {
 											int cost = BountyHunter.getValueForEmblems(player, true);
-											player.getPacketSender().sendMessage("@red@You have received "+cost+" blood money for your emblem(s).");
+											player.getPacketSender().sendMessage("@red@You have received " + cost
+													+ " blood money for your emblem(s).");
 											DialogueManager.start(player, 4);
 										} else {
 											player.getPacketSender().sendInterfaceRemoval();
@@ -89,25 +93,26 @@ public class NPCOptionPacketListener extends NpcIdentifiers implements PacketLis
 									}
 								});
 								int value = BountyHunter.getValueForEmblems(player, false);
-								if(value > 0) {
-									player.setDialogue(DialogueManager.getDialogues().get(10)); //Yes / no option
-									DialogueManager.sendStatement(player, "I will give you "+value+" blood money for those emblems. Agree?");
+								if (value > 0) {
+									player.setDialogue(DialogueManager.getDialogues().get(10)); // Yes / no option
+									DialogueManager.sendStatement(player,
+											"I will give you " + value + " blood money for those emblems. Agree?");
 								} else {
 									DialogueManager.start(player, 5);
 								}
 								break;
 							case 3:
-								//Skull me option
-								if(player.isSkulled()) {
+								// Skull me option
+								if (player.isSkulled()) {
 									DialogueManager.start(player, 3);
 								} else {
 									DialogueManager.start(player, 6);
 									player.setDialogueOptions(new DialogueOptions() {
 										@Override
 										public void handleOption(Player player, int option) {
-											if(option == 1) {
+											if (option == 1) {
 												CombatFactory.skull(player, SkullType.WHITE_SKULL, 300);
-											} else if(option == 2) {
+											} else if (option == 2) {
 												CombatFactory.skull(player, SkullType.RED_SKULL, 300);
 											}
 											player.getPacketSender().sendInterfaceRemoval();
@@ -116,7 +121,7 @@ public class NPCOptionPacketListener extends NpcIdentifiers implements PacketLis
 								}
 								break;
 							case 4:
-								//Cancel option
+								// Cancel option
 								player.getPacketSender().sendInterfaceRemoval();
 								break;
 							}
@@ -125,28 +130,29 @@ public class NPCOptionPacketListener extends NpcIdentifiers implements PacketLis
 					break;
 
 				case PERDU:
-					//Set dialogue options
+					// Set dialogue options
 					player.setDialogueOptions(new DialogueOptions() {
 						@Override
 						public void handleOption(Player player, int option) {
-							if(option == 1) {
+							if (option == 1) {
 
 								int cost = BrokenItem.getRepairCost(player);
 
 								player.setDialogueOptions(new DialogueOptions() {
 									@Override
 									public void handleOption(Player player, int option) {
-										if(option == 1) {
+										if (option == 1) {
 											BrokenItem.repair(player);
 										} else {
 											player.getPacketSender().sendInterfaceRemoval();
 										}
 									}
-								});								
+								});
 
-								if(cost > 0) {
-									player.setDialogue(DialogueManager.getDialogues().get(10)); //Yes / no option
-									DialogueManager.sendStatement(player, "It will cost you "+cost+" blood money to fix your broken items. Agree?");
+								if (cost > 0) {
+									player.setDialogue(DialogueManager.getDialogues().get(10)); // Yes / no option
+									DialogueManager.sendStatement(player, "It will cost you " + cost
+											+ " blood money to fix your broken items. Agree?");
 								} else {
 									DialogueManager.start(player, 20);
 								}
@@ -157,16 +163,14 @@ public class NPCOptionPacketListener extends NpcIdentifiers implements PacketLis
 						}
 					});
 
-					//Start main dialogue
+					// Start main dialogue
 					DialogueManager.start(player, 19);
 					break;
 
-
 				case FINANCIAL_ADVISOR:
 					DialogueManager.start(player, 15);
-					//Removed
+					// Removed
 					break;
-
 
 				}
 				npc.setPositionToFace(player.getPosition());
@@ -177,34 +181,34 @@ public class NPCOptionPacketListener extends NpcIdentifiers implements PacketLis
 
 	public void handleSecondClick(Player player, Packet packet) {
 		int index = packet.readLEShortA();
-		if(index < 0 || index > World.getNpcs().capacity())
+		if (index < 0 || index > World.getNpcs().capacity())
 			return;
 		final NPC npc = World.getNpcs().get(index);
-		if(npc == null)
+		if (npc == null)
 			return;
 		player.setEntityInteraction(npc);
 		final int npcId = npc.getId();
-		if(player.getRights() == PlayerRights.DEVELOPER)
-			player.getPacketSender().sendMessage("Second click npc id: "+npcId);
+		if (player.getRights() == PlayerRights.DEVELOPER)
+			player.getPacketSender().sendMessage("Second click npc id: " + npcId);
 		player.setWalkToTask(new WalkToAction(player, npc.getPosition(), npc.getSize(), new Action() {
 			@Override
 			public void execute() {
-				//Check if we're picking up our pet..
-				if(PetHandler.pickup(player, npc)) {
-					return;
-				}
-				
-				//Check if we're thieving..
-				if(Pickpocketing.init(player, npc)) {
+				// Check if we're picking up our pet..
+				if (PetHandler.pickup(player, npc)) {
 					return;
 				}
 
-				switch(npc.getId()) {
-				case 1497: //Net and bait
+				// Check if we're thieving..
+				if (Pickpocketing.init(player, npc)) {
+					return;
+				}
+
+				switch (npc.getId()) {
+				case 1497: // Net and bait
 				case 1498: // Net and bait
 					player.getSkillManager().startSkillable(new Fishing(npc, FishingTool.FISHING_ROD));
 					break;
-					
+
 				case EMBLEM_TRADER:
 					ShopManager.open(player, ShopIdentifiers.BOUNTY_HUNTER_STORE);
 					break;
@@ -218,32 +222,33 @@ public class NPCOptionPacketListener extends NpcIdentifiers implements PacketLis
 
 	public void handleThirdClick(Player player, Packet packet) {
 		int index = packet.readShort();
-		if(index < 0 || index > World.getNpcs().capacity())
+		if (index < 0 || index > World.getNpcs().capacity())
 			return;
 		final NPC npc = World.getNpcs().get(index);
 		if (npc == null)
 			return;
 		player.setEntityInteraction(npc);
 		npc.setPositionToFace(player.getPosition());
-		if(player.getRights() == PlayerRights.DEVELOPER)
-			player.getPacketSender().sendMessage("Third click npc id: "+npc.getId());
+		if (player.getRights() == PlayerRights.DEVELOPER)
+			player.getPacketSender().sendMessage("Third click npc id: " + npc.getId());
 		player.setWalkToTask(new WalkToAction(player, npc.getPosition(), npc.getSize(), new Action() {
 			@Override
 			public void execute() {
-				//Check if we're morphing up our pet..
-				if(PetHandler.morph(player, npc)) {
+				// Check if we're morphing up our pet..
+				if (PetHandler.morph(player, npc)) {
 					return;
 				}
 
-				switch(npc.getId()) {
+				switch (npc.getId()) {
 				case EMBLEM_TRADER:
-					//Sell emblems option
+					// Sell emblems option
 					player.setDialogueOptions(new DialogueOptions() {
 						@Override
 						public void handleOption(Player player, int option) {
-							if(option == 1) {
+							if (option == 1) {
 								int cost = BountyHunter.getValueForEmblems(player, true);
-								player.getPacketSender().sendMessage("@red@You have received "+cost+" blood money for your emblem(s).");
+								player.getPacketSender().sendMessage(
+										"@red@You have received " + cost + " blood money for your emblem(s).");
 								DialogueManager.start(player, 4);
 							} else {
 								player.getPacketSender().sendInterfaceRemoval();
@@ -251,9 +256,10 @@ public class NPCOptionPacketListener extends NpcIdentifiers implements PacketLis
 						}
 					});
 					int value = BountyHunter.getValueForEmblems(player, false);
-					if(value > 0) {
-						player.setDialogue(DialogueManager.getDialogues().get(10)); //Yes / no option
-						DialogueManager.sendStatement(player, "I will give you "+value+" blood money for those emblems. Agree?");
+					if (value > 0) {
+						player.setDialogue(DialogueManager.getDialogues().get(10)); // Yes / no option
+						DialogueManager.sendStatement(player,
+								"I will give you " + value + " blood money for those emblems. Agree?");
 					} else {
 						DialogueManager.start(player, 5);
 					}
@@ -268,29 +274,29 @@ public class NPCOptionPacketListener extends NpcIdentifiers implements PacketLis
 
 	public void handleFourthClick(Player player, Packet packet) {
 		int index = packet.readLEShort();
-		if(index < 0 || index > World.getNpcs().capacity())
+		if (index < 0 || index > World.getNpcs().capacity())
 			return;
 		final NPC npc = World.getNpcs().get(index);
 		if (npc == null)
 			return;
 		player.setEntityInteraction(npc);
-		if(player.getRights() == PlayerRights.DEVELOPER)
-			player.getPacketSender().sendMessage("Fourth click npc id: "+npc.getId());
+		if (player.getRights() == PlayerRights.DEVELOPER)
+			player.getPacketSender().sendMessage("Fourth click npc id: " + npc.getId());
 		player.setWalkToTask(new WalkToAction(player, npc.getPosition(), npc.getSize(), new Action() {
 			@Override
 			public void execute() {
-				switch(npc.getId()) {
+				switch (npc.getId()) {
 				case EMBLEM_TRADER:
-					if(player.isSkulled()) {
+					if (player.isSkulled()) {
 						DialogueManager.start(player, 3);
 					} else {
 						DialogueManager.start(player, 6);
 						player.setDialogueOptions(new DialogueOptions() {
 							@Override
 							public void handleOption(Player player, int option) {
-								if(option == 1) {
+								if (option == 1) {
 									CombatFactory.skull(player, SkullType.WHITE_SKULL, 300);
-								} else if(option == 2) {
+								} else if (option == 2) {
 									CombatFactory.skull(player, SkullType.RED_SKULL, 300);
 								}
 								player.getPacketSender().sendInterfaceRemoval();
@@ -307,7 +313,7 @@ public class NPCOptionPacketListener extends NpcIdentifiers implements PacketLis
 
 	private static void attackNPC(Player player, Packet packet) {
 		int index = packet.readShortA();
-		if(index < 0 || index > World.getNpcs().capacity())
+		if (index < 0 || index > World.getNpcs().capacity())
 			return;
 		final NPC interact = World.getNpcs().get(index);
 
@@ -319,7 +325,7 @@ public class NPCOptionPacketListener extends NpcIdentifiers implements PacketLis
 			return;
 		}
 
-		if(interact == null || interact.getHitpoints() <= 0) {
+		if (interact == null || interact.getHitpoints() <= 0) {
 			player.getMovementQueue().reset();
 			return;
 		}
@@ -345,14 +351,14 @@ public class NPCOptionPacketListener extends NpcIdentifiers implements PacketLis
 			return;
 		}
 
-		if(interact == null || interact.getHitpoints() <= 0) {
+		if (interact == null || interact.getHitpoints() <= 0) {
 			player.getMovementQueue().reset();
 			return;
 		}
 
 		CombatSpell spell = CombatSpells.getCombatSpell(spellId);
 
-		if(spell == null) {
+		if (spell == null) {
 			player.getMovementQueue().reset();
 			return;
 		}
@@ -366,11 +372,11 @@ public class NPCOptionPacketListener extends NpcIdentifiers implements PacketLis
 	@Override
 	public void handleMessage(Player player, Packet packet) {
 
-		if(player == null || player.getHitpoints() <= 0) {
+		if (player == null || player.getHitpoints() <= 0) {
 			return;
 		}
 
-		if(player.busy()) {
+		if (player.busy()) {
 			return;
 		}
 		switch (packet.getOpcode()) {
